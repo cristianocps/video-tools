@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Video Tools
+Comment=Merge, extract and remove audio from videos
+Exec=video-tools %U
+Icon=com.videotools.merger
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Video;AudioVideoEditing;
+Keywords=video;audio;merge;extract;ffmpeg;
+StartupWMClass=video-tools
+MimeType=video/mp4;video/x-matroska;video/avi;audio/mpeg;audio/mp4;

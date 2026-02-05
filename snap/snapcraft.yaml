@@ -1,0 +1,60 @@
+name: video-tools
+version: '1.0.0'
+summary: Merge, extract and remove audio from videos
+description: |
+  Video Tools is a simple desktop application that allows you to:
+  - Merge audio files with video files
+  - Extract audio tracks from video files
+  - Remove audio from video files
+  
+  Powered by FFmpeg for fast and reliable video processing.
+
+base: core22
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+apps:
+  video-tools:
+    command: video-tools
+    desktop: usr/share/applications/video-tools.desktop
+    extensions:
+      - gnome
+    plugs:
+      - home
+      - removable-media
+      - audio-playback
+      - browser-support
+      - network
+      - network-bind
+    environment:
+      DISABLE_WAYLAND: '1'
+      TMPDIR: $XDG_RUNTIME_DIR
+
+parts:
+  video-tools:
+    plugin: nil
+    source: .
+    build-packages:
+      - nodejs
+      - npm
+    stage-packages:
+      - ffmpeg
+      - libffmpeg-nvenc-dev
+    override-build: |
+      npm install
+      npm run build
+      npm run build:linux:snap
+      
+      # Copy the built snap files
+      cp -r release/linux-unpacked/* $SNAPCRAFT_PART_INSTALL/
+      
+  desktop-file:
+    plugin: dump
+    source: snap/gui
+    organize:
+      video-tools.desktop: usr/share/applications/video-tools.desktop
+      video-tools.png: usr/share/icons/hicolor/256x256/apps/video-tools.png

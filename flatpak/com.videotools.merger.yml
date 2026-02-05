@@ -1,0 +1,70 @@
+app-id: com.videotools.merger
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '23.08'
+command: video-tools
+separate-locales: false
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  - --filesystem=home
+  - --filesystem=/media
+  - --filesystem=/mnt
+  - --filesystem=/run/media
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --own-name=org.kde.*
+
+modules:
+  - name: ffmpeg
+    buildsystem: autotools
+    config-opts:
+      - --enable-shared
+      - --disable-static
+      - --enable-gpl
+      - --enable-version3
+      - --disable-doc
+      - --disable-debug
+      - --enable-libmp3lame
+      - --enable-libopus
+      - --enable-libvorbis
+      - --enable-libvpx
+      - --enable-libx264
+      - --enable-libx265
+    cleanup:
+      - /share/ffmpeg/examples
+    sources:
+      - type: archive
+        url: https://ffmpeg.org/releases/ffmpeg-6.1.tar.xz
+        sha256: 488c76e57dd9b3bee901f71d5c95eaf1db4a5a31fe46a28654e837144207c270
+        x-checker-data:
+          type: anitya
+          project-id: 5405
+          stable-only: true
+          url-template: https://ffmpeg.org/releases/ffmpeg-$version.tar.xz
+
+  - name: video-tools
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 video-tools -t /app/bin/
+      - install -Dm644 com.videotools.merger.desktop -t /app/share/applications/
+      - install -Dm644 com.videotools.merger.metainfo.xml -t /app/share/metainfo/
+      - install -Dm644 icons/icon-256.png /app/share/icons/hicolor/256x256/apps/com.videotools.merger.png
+      - install -Dm644 icons/icon-128.png /app/share/icons/hicolor/128x128/apps/com.videotools.merger.png
+      - install -Dm644 icons/icon-64.png /app/share/icons/hicolor/64x64/apps/com.videotools.merger.png
+    sources:
+      - type: dir
+        path: ../release/linux-unpacked
+      - type: file
+        path: com.videotools.merger.desktop
+      - type: file
+        path: com.videotools.merger.metainfo.xml
+      - type: dir
+        path: ../build/icons
+        dest: icons

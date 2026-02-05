@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f"/>
+      <stop offset="100%" style="stop-color:#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  
+  <!-- Video icon (clapperboard style) -->
+  <rect x="40" y="70" width="120" height="90" rx="8" fill="url(#accent)" opacity="0.9"/>
+  <rect x="40" y="50" width="120" height="25" rx="4" fill="url(#accent)"/>
+  
+  <!-- Clapperboard stripes -->
+  <path d="M50 50 L65 75" stroke="#0f172a" stroke-width="4"/>
+  <path d="M75 50 L90 75" stroke="#0f172a" stroke-width="4"/>
+  <path d="M100 50 L115 75" stroke="#0f172a" stroke-width="4"/>
+  <path d="M125 50 L140 75" stroke="#0f172a" stroke-width="4"/>
+  
+  <!-- Audio waves -->
+  <g stroke="#22c55e" stroke-width="6" stroke-linecap="round">
+    <path d="M180 95 L180 135"/>
+    <path d="M195 80 L195 150"/>
+    <path d="M210 100 L210 130"/>
+  </g>
+  
+  <!-- Merge arrow -->
+  <path d="M100 180 L156 180 L156 165 L190 185 L156 205 L156 190 L100 190 Z" fill="#f59e0b"/>
+</svg>

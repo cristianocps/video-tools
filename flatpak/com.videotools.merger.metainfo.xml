@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.videotools.merger</id>
+  <name>Video Tools</name>
+  <summary>Merge, extract and remove audio from videos</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <description>
+    <p>
+      Video Tools is a simple and user-friendly desktop application for common
+      audio and video operations:
+    </p>
+    <ul>
+      <li>Merge audio files with video files</li>
+      <li>Extract audio tracks from video files to MP3</li>
+      <li>Remove audio from video files</li>
+    </ul>
+    <p>
+      Features include drag-and-drop support, progress tracking, and a history
+      of recently processed files. Powered by FFmpeg for fast and reliable
+      video processing.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">com.videotools.merger.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application window - Merge audio and video</caption>
+      <image>https://example.com/screenshots/video-tools-merge.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Extract audio from video</caption>
+      <image>https://example.com/screenshots/video-tools-extract.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/example/video-tools</url>
+  <url type="bugtracker">https://github.com/example/video-tools/issues</url>
+
+  <provides>
+    <binary>video-tools</binary>
+  </provides>
+
+  <releases>
+    <release version="1.0.0" date="2024-01-22">
+      <description>
+        <p>Initial release with the following features:</p>
+        <ul>
+          <li>Merge audio and video files</li>
+          <li>Extract audio from video to MP3</li>
+          <li>Remove audio from video</li>
+          <li>Drag and drop support</li>
+          <li>Processing history</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1" />
+  
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Video</category>
+    <category>AudioVideoEditing</category>
+  </categories>
+
+  <keywords>
+    <keyword>video</keyword>
+    <keyword>audio</keyword>
+    <keyword>merge</keyword>
+    <keyword>extract</keyword>
+    <keyword>ffmpeg</keyword>
+    <keyword>converter</keyword>
+  </keywords>
+</component>

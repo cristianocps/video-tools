@@ -1,0 +1,180 @@
+name: Publish to AUR
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+
+jobs:
+  aur-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Download AppImage from release
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/SBH-Video-Tools-${VERSION}-linux-x64.AppImage"
+          echo "Downloading from: $DOWNLOAD_URL"
+          curl -L -o sbh-video-tools.AppImage "$DOWNLOAD_URL" || echo "AppImage not found, will use source build"
+
+      - name: Calculate checksums
+        id: checksums
+        run: |
+          if [ -f sbh-video-tools.AppImage ]; then
+            SHA256=$(sha256sum sbh-video-tools.AppImage | cut -d' ' -f1)
+            echo "appimage_sha256=$SHA256" >> $GITHUB_OUTPUT
+          fi
+          
+          # Source tarball checksum
+          VERSION="${{ steps.version.outputs.version }}"
+          curl -L -o source.tar.gz "https://github.com/${{ github.repository }}/archive/refs/tags/v${VERSION}.tar.gz" || true
+          if [ -f source.tar.gz ]; then
+            SOURCE_SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
+            echo "source_sha256=$SOURCE_SHA256" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate PKGBUILD
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          SOURCE_SHA256="${{ steps.checksums.outputs.source_sha256 }}"
+          
+          cat > PKGBUILD << 'PKGBUILD_EOF'
+          # Maintainer: cristianocps <your-email@example.com>
+          pkgname=sbh-video-tools
+          pkgver=${VERSION}
+          pkgrel=1
+          pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files"
+          arch=('x86_64')
+          url="https://github.com/cristianocps/simple-but-honest-video-tools"
+          license=('MIT')
+          depends=('electron' 'ffmpeg' 'nodejs')
+          makedepends=('npm' 'git')
+          optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
+          source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${pkgver}.tar.gz")
+          sha256sums=('${SOURCE_SHA256}')
+          
+          build() {
+              cd "simple-but-honest-video-tools-${pkgver}"
+              npm ci --ignore-scripts
+              npm run build
+          }
+          
+          package() {
+              cd "simple-but-honest-video-tools-${pkgver}"
+              
+              # Install app files
+              install -dm755 "${pkgdir}/usr/lib/${pkgname}"
+              cp -r dist/* "${pkgdir}/usr/lib/${pkgname}/"
+              cp -r electron "${pkgdir}/usr/lib/${pkgname}/"
+              cp package.json "${pkgdir}/usr/lib/${pkgname}/"
+              
+              # Install production dependencies
+              cd "${pkgdir}/usr/lib/${pkgname}"
+              npm ci --omit=dev --ignore-scripts
+              
+              # Install desktop file
+              install -Dm644 "${srcdir}/simple-but-honest-video-tools-${pkgver}/build/icons/256x256.png" \
+                  "${pkgdir}/usr/share/icons/hicolor/256x256/apps/${pkgname}.png"
+              
+              # Create desktop entry
+              install -dm755 "${pkgdir}/usr/share/applications"
+              cat > "${pkgdir}/usr/share/applications/${pkgname}.desktop" << EOF
+          [Desktop Entry]
+          Name=SBH Video Tools
+          Comment=Simple But Honest Video Tools
+          Exec=electron /usr/lib/${pkgname}/electron/main.js
+          Icon=${pkgname}
+          Type=Application
+          Categories=AudioVideo;Audio;Video;AudioVideoEditing;
+          Keywords=video;audio;merge;extract;download;youtube;ffmpeg;
+          EOF
+              
+              # Create launcher script
+              install -dm755 "${pkgdir}/usr/bin"
+              cat > "${pkgdir}/usr/bin/${pkgname}" << EOF
+          #!/bin/bash
+          exec electron /usr/lib/${pkgname}/electron/main.js "\$@"
+          EOF
+              chmod +x "${pkgdir}/usr/bin/${pkgname}"
+              
+              # Install license
+              install -Dm644 "${srcdir}/simple-but-honest-video-tools-${pkgver}/LICENSE" \
+                  "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+          }
+          PKGBUILD_EOF
+          
+          # Replace variables in PKGBUILD
+          sed -i "s/\${VERSION}/${VERSION}/g" PKGBUILD
+          sed -i "s/\${SOURCE_SHA256}/${SOURCE_SHA256}/g" PKGBUILD
+          
+          cat PKGBUILD
+
+      - name: Generate .SRCINFO
+        run: |
+          # Install makepkg dependencies
+          sudo apt-get update
+          sudo apt-get install -y pacman-package-manager || true
+          
+          # Generate .SRCINFO manually since we can't run makepkg on Ubuntu
+          VERSION="${{ steps.version.outputs.version }}"
+          SOURCE_SHA256="${{ steps.checksums.outputs.source_sha256 }}"
+          
+          cat > .SRCINFO << EOF
+          pkgbase = sbh-video-tools
+          	pkgdesc = Simple But Honest Video Tools - Download, merge, extract and edit video/audio files
+          	pkgver = ${VERSION}
+          	pkgrel = 1
+          	url = https://github.com/cristianocps/simple-but-honest-video-tools
+          	arch = x86_64
+          	license = MIT
+          	makedepends = npm
+          	makedepends = git
+          	depends = electron
+          	depends = ffmpeg
+          	depends = nodejs
+          	optdepends = yt-dlp: for downloading videos from YouTube and other sites
+          	source = sbh-video-tools-${VERSION}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${VERSION}.tar.gz
+          	sha256sums = ${SOURCE_SHA256}
+          
+          pkgname = sbh-video-tools
+          EOF
+          
+          cat .SRCINFO
+
+      - name: Upload PKGBUILD artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aur-pkgbuild
+          path: |
+            PKGBUILD
+            .SRCINFO
+
+      # Optionally publish to AUR (requires AUR SSH key secret)
+      # - name: Publish to AUR
+      #   uses: KSXGitHub/github-actions-deploy-aur@v2
+      #   with:
+      #     pkgname: sbh-video-tools
+      #     pkgbuild: ./PKGBUILD
+      #     commit_username: ${{ secrets.AUR_USERNAME }}
+      #     commit_email: ${{ secrets.AUR_EMAIL }}
+      #     ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+      #     commit_message: "Update to version ${{ steps.version.outputs.version }}"

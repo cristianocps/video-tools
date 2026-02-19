@@ -1,7 +1,7 @@
 {
-  "name": "video-audio-merger",
+  "name": "simple-but-honest-video-tools",
   "version": "1.0.0",
-  "description": "Simple Electron app to merge audio and video files",
+  "description": "Simple But Honest Video Tools - Download, merge, extract and edit video/audio files",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -13,12 +13,12 @@
     "build:win": "npm run prepare-ffmpeg && vite build && electron-builder --win",
     "build:win:no-wine": "npm run prepare-ffmpeg && vite build && node scripts/build-win-no-wine.js",
     "build:win:x64": "npm run prepare-ffmpeg && vite build && node scripts/build-win-x64.js",
-    "build:linux": "npm run prepare-ffmpeg && vite build && electron-builder --linux",
-    "build:linux:deb": "npm run prepare-ffmpeg && vite build && electron-builder --linux deb",
-    "build:linux:rpm": "npm run prepare-ffmpeg && vite build && electron-builder --linux rpm",
-    "build:linux:appimage": "npm run prepare-ffmpeg && vite build && electron-builder --linux AppImage",
-    "build:linux:snap": "npm run prepare-ffmpeg && vite build && electron-builder --linux snap",
-    "build:linux:flatpak": "npm run prepare-ffmpeg && vite build && electron-builder --linux flatpak",
+    "build:linux": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux",
+    "build:linux:deb": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux deb",
+    "build:linux:rpm": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux rpm",
+    "build:linux:appimage": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux AppImage",
+    "build:linux:snap": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux snap",
+    "build:linux:flatpak": "BUILD_TARGET_PLATFORM=linux npm run prepare-ffmpeg && vite build && electron-builder --linux flatpak",
     "build:mac": "npm run prepare-ffmpeg && vite build && electron-builder --mac",
     "build:all": "npm run prepare-ffmpeg && vite build && electron-builder --win --linux --mac"
   },
@@ -29,21 +29,28 @@
     "merge",
     "ffmpeg"
   ],
-  "author": "Video Tools",
+  "author": "cristianocps",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cristianocps/simple-but-honest-video-tools"
+  },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "ffmpeg-static": "^5.3.0",
-    "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.3",
     "lucide-react": "^0.469.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "yt-dlp-wrap": "^2.3.12"
+  },
+  "optionalDependencies": {
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^0.2.52",
@@ -62,39 +69,39 @@
     "wait-on": "^8.0.2"
   },
   "build": {
-    "appId": "com.videotools.merger",
-    "productName": "Video Tools",
-    "copyright": "Copyright © 2024",
+    "appId": "com.cristianocps.sbhvideotools",
+    "productName": "SBH Video Tools",
+    "copyright": "Copyright © 2024 cristianocps",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "!node_modules/ffmpeg-static/**/*",
+      "!node_modules/ffprobe-static/**/*",
+      "!node_modules/@anthropic-ai/**/*",
+      "!node_modules/typescript/**/*",
+      "!node_modules/vite/**/*",
+      "!node_modules/electron/**/*",
+      "!node_modules/electron-builder/**/*",
+      "!**/*.map",
+      "!**/*.md",
+      "!**/LICENSE*",
+      "!**/CHANGELOG*"
     ],
     "directories": {
       "output": "release",
       "buildResources": "build"
     },
     "asar": true,
-    "asarUnpack": [
-      "node_modules/ffmpeg-static/**",
-      "node_modules/ffprobe-static/**"
-    ],
+    "compression": "maximum",
+    "nodeGypRebuild": false,
+    "npmRebuild": false,
     "extraResources": [
       {
         "from": "assets/",
         "to": "assets/",
         "filter": [
           "**/*"
-        ]
-      },
-      {
-        "from": "bin/",
-        "to": "bin/",
-        "filter": [
-          "ffmpeg",
-          "ffmpeg.exe",
-          "ffprobe",
-          "ffprobe.exe"
         ]
       }
     ],
@@ -114,15 +121,22 @@
         }
       ],
       "icon": "build/icon.ico",
-      "publisherName": "Video Tools",
-      "forceCodeSigning": false
+      "publisherName": "cristianocps",
+      "forceCodeSigning": false,
+      "extraResources": [
+        {
+          "from": "bin/",
+          "to": "bin/",
+          "filter": ["ffmpeg.exe", "ffprobe.exe"]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Video Tools",
+      "shortcutName": "SBH Video Tools",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "installerHeaderIcon": "build/icon.ico",
@@ -141,29 +155,29 @@
       ],
       "icon": "build/icons",
       "category": "AudioVideo",
-      "maintainer": "videotools@example.com",
-      "vendor": "Video Tools",
-      "synopsis": "Merge, extract and remove audio from videos",
-      "description": "A simple tool to merge audio and video files, extract audio from videos, and remove audio tracks. Powered by FFmpeg.",
+      "maintainer": "cristianocps",
+      "vendor": "cristianocps",
+      "synopsis": "Simple But Honest Video Tools",
+      "description": "Download, merge, extract and edit video/audio files. Download from YouTube and 1000+ sites. Powered by FFmpeg & yt-dlp.",
       "desktop": {
-        "Name": "Video Tools",
-        "Comment": "Merge, extract and remove audio from videos",
+        "Name": "SBH Video Tools",
+        "Comment": "Simple But Honest Video Tools",
         "Categories": "AudioVideo;Audio;Video;AudioVideoEditing",
-        "Keywords": "video;audio;merge;extract;ffmpeg"
+        "Keywords": "video;audio;merge;extract;download;youtube;ffmpeg"
       }
     },
     "deb": {
-      "depends": [],
+      "depends": ["ffmpeg"],
       "packageCategory": "video",
       "priority": "optional"
     },
     "rpm": {
-      "depends": []
+      "depends": ["ffmpeg"]
     },
     "snap": {
       "confinement": "strict",
       "grade": "stable",
-      "summary": "Merge, extract and remove audio from videos",
+      "summary": "Simple But Honest Video Tools - Download, merge, extract video/audio",
       "plugs": [
         "default",
         "home",
@@ -213,7 +227,14 @@
       "icon": "build/icon.icns",
       "category": "public.app-category.video",
       "hardenedRuntime": true,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "extraResources": [
+        {
+          "from": "bin/",
+          "to": "bin/",
+          "filter": ["ffmpeg", "ffprobe"]
+        }
+      ]
     },
     "dmg": {
       "title": "${productName} ${version}",

@@ -1,6 +1,6 @@
 name: video-tools
 version: '1.0.0'
-summary: Merge, extract and remove audio from videos
+summary: Download, Merge, Extract and Remove Audio from Videos
 description: |
   Video Tools is a simple desktop application that allows you to:
   - Merge audio files with video files
@@ -43,7 +43,6 @@ parts:
       - npm
     stage-packages:
       - ffmpeg
-      - libffmpeg-nvenc-dev
     override-build: |
       npm install
       npm run build

@@ -4,19 +4,37 @@
  * Prepare FFmpeg binaries for packaging
  * This script copies the ffmpeg-static binaries to the bin folder
  * for electron-builder to include them in the final package.
+ * 
+ * On Linux, we skip this step as we use system FFmpeg to reduce package size.
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const projectRoot = path.join(__dirname, '..');
-
-// Determine current platform
-const platform = process.platform; // 'linux', 'darwin', 'win32'
+const platform = process.platform;
+const targetPlatform = process.env.BUILD_TARGET_PLATFORM || platform;
 
 console.log(`Preparing FFmpeg for platform: ${platform}`);
+console.log(`Target platform: ${targetPlatform}`);
 
-// Get paths from the installed packages
+// On Linux builds, skip bundling FFmpeg (use system FFmpeg)
+if (targetPlatform === 'linux') {
+  console.log('Linux build detected - skipping FFmpeg bundling (will use system FFmpeg)');
+  console.log('Make sure FFmpeg is installed: sudo apt install ffmpeg');
+  
+  // Create empty bin directory to prevent build errors
+  const binDir = path.join(projectRoot, 'bin');
+  if (!fs.existsSync(binDir)) {
+    fs.mkdirSync(binDir, { recursive: true });
+  }
+  
+  // Create placeholder files
+  fs.writeFileSync(path.join(binDir, '.gitkeep'), '');
+  process.exit(0);
+}
+
+// For Windows/Mac, bundle FFmpeg
 let ffmpegPath, ffprobePath;
 
 try {
@@ -25,6 +43,7 @@ try {
 } catch (e) {
   console.error('Error: ffmpeg-static or ffprobe-static not installed');
   console.error('Run: npm install ffmpeg-static ffprobe-static');
+  console.error('Note: On Linux, these are optional as system FFmpeg is used.');
   process.exit(1);
 }
 
@@ -34,7 +53,6 @@ console.log('FFprobe binary:', ffprobePath);
 // Create bin directory
 const binDir = path.join(projectRoot, 'bin');
 if (fs.existsSync(binDir)) {
-  // Clean existing bin directory
   fs.rmSync(binDir, { recursive: true, force: true });
 }
 fs.mkdirSync(binDir, { recursive: true });
@@ -72,3 +90,4 @@ const ffprobeSize = fs.statSync(ffprobeDest).size;
 console.log(`\nBinary sizes:`);
 console.log(`  ffmpeg: ${(ffmpegSize / 1024 / 1024).toFixed(2)} MB`);
 console.log(`  ffprobe: ${(ffprobeSize / 1024 / 1024).toFixed(2)} MB`);
+console.log(`  Total: ${((ffmpegSize + ffprobeSize) / 1024 / 1024).toFixed(2)} MB`);

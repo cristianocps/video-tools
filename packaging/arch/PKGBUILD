@@ -1,0 +1,73 @@
+# Maintainer: cristianocps <your-email@example.com>
+pkgname=sbh-video-tools
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files"
+arch=('x86_64')
+url="https://github.com/cristianocps/simple-but-honest-video-tools"
+license=('MIT')
+depends=('electron' 'ffmpeg' 'nodejs')
+makedepends=('npm' 'git')
+optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "simple-but-honest-video-tools-${pkgver}"
+    
+    # Install dependencies and build
+    npm ci --ignore-scripts
+    npm run build
+}
+
+package() {
+    cd "simple-but-honest-video-tools-${pkgver}"
+    
+    # Create directories
+    install -dm755 "${pkgdir}/usr/lib/${pkgname}"
+    install -dm755 "${pkgdir}/usr/bin"
+    install -dm755 "${pkgdir}/usr/share/applications"
+    install -dm755 "${pkgdir}/usr/share/icons/hicolor/256x256/apps"
+    install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
+    
+    # Install app files
+    cp -r dist/* "${pkgdir}/usr/lib/${pkgname}/"
+    cp -r electron "${pkgdir}/usr/lib/${pkgname}/"
+    cp package.json "${pkgdir}/usr/lib/${pkgname}/"
+    
+    # Install production dependencies only
+    cd "${pkgdir}/usr/lib/${pkgname}"
+    npm ci --omit=dev --ignore-scripts
+    cd "${srcdir}/simple-but-honest-video-tools-${pkgver}"
+    
+    # Install icon
+    if [ -f "build/icons/256x256.png" ]; then
+        install -Dm644 "build/icons/256x256.png" \
+            "${pkgdir}/usr/share/icons/hicolor/256x256/apps/${pkgname}.png"
+    fi
+    
+    # Create desktop entry
+    cat > "${pkgdir}/usr/share/applications/${pkgname}.desktop" << EOF
+[Desktop Entry]
+Name=SBH Video Tools
+Comment=Simple But Honest Video Tools - Download, merge, extract and edit video/audio
+Exec=${pkgname} %U
+Icon=${pkgname}
+Type=Application
+Categories=AudioVideo;Audio;Video;AudioVideoEditing;
+Keywords=video;audio;merge;extract;download;youtube;ffmpeg;yt-dlp;
+MimeType=video/*;audio/*;
+Terminal=false
+StartupNotify=true
+EOF
+    
+    # Create launcher script
+    cat > "${pkgdir}/usr/bin/${pkgname}" << EOF
+#!/bin/bash
+exec electron /usr/lib/${pkgname}/electron/main.js "\$@"
+EOF
+    chmod +x "${pkgdir}/usr/bin/${pkgname}"
+    
+    # Install license
+    install -Dm644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

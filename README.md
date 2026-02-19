@@ -1,17 +1,41 @@
-# Video Tools
+# Simple But Honest Video Tools
 
-A simple and modern Electron application to work with audio and video files. Powered by FFmpeg.
+A simple and modern Electron application to work with audio and video files. Download, merge, extract, and edit video/audio with ease. Powered by FFmpeg & yt-dlp.
 
-![Video Tools](https://img.shields.io/badge/Electron-33-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+![SBH Video Tools](https://img.shields.io/badge/Electron-33-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+
+## Screenshots
+
+Coming soon...
 
 ## Features
 
+- **Video Download** - Download from YouTube, Vimeo, Twitter/X, TikTok, Instagram, and 1000+ sites
+- **Audio Only Download** - Extract audio as MP3 from any video
+- **Password Protected Videos** - Support for Vimeo and other password-protected content
 - **Merge Audio & Video** - Add an audio track to a video file
 - **Extract Audio** - Extract audio from video to MP3
 - **Remove Audio** - Remove the audio track from a video
+- **Job Queue** - Queue multiple jobs and process them in batch
 - **Drag & Drop** - Easy file selection with drag and drop
 - **History** - Track recently processed files
-- **Modern UI** - Clean dark theme with shadcn/ui components
+- **Light/Dark Theme** - Toggle between light, dark, or system theme
+- **System Notifications** - Get notified when jobs complete
+- **Modern UI** - Clean design with shadcn/ui components
+
+### Video Download
+The download feature supports 1000+ websites including:
+- YouTube, Vimeo, Dailymotion
+- Twitter/X, Instagram, TikTok, Facebook
+- Twitch, Kick, Reddit
+- And many more...
+
+Features:
+- Fetch video information from URL
+- See available video qualities (resolution, FPS, codec)
+- Select from multiple audio tracks (different languages)
+- Download video and audio separately or merged
+- Automatic yt-dlp download on first use
 
 ## Supported Formats
 
@@ -170,6 +194,7 @@ You can generate these from a single PNG using tools like:
 - **Tailwind CSS** - Styling
 - **shadcn/ui** - UI components
 - **FFmpeg** - Video/audio processing (bundled via ffmpeg-static)
+- **yt-dlp** - YouTube video downloading (auto-downloaded on first use)
 - **electron-builder** - Packaging
 
 ## FFmpeg Bundling

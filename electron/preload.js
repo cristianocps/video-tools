@@ -14,5 +14,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('merge-progress', (event, progress) => callback(progress));
   },
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
-  windowClose: () => ipcRenderer.invoke('window-close')
+  windowClose: () => ipcRenderer.invoke('window-close'),
+  
+  // YouTube API
+  youtubeCheck: () => ipcRenderer.invoke('youtube-check'),
+  youtubeGetInfo: (url, password) => ipcRenderer.invoke('youtube-get-info', url, password),
+  youtubeDownload: (params) => ipcRenderer.invoke('youtube-download', params),
+  selectDownloadFolder: () => ipcRenderer.invoke('select-download-folder'),
+  
+  // System notifications
+  showNotification: (options) => ipcRenderer.invoke('show-notification', options),
+  
+  // File operations
+  showInFolder: (filePath) => ipcRenderer.invoke('show-in-folder', filePath),
+  openFile: (filePath) => ipcRenderer.invoke('open-file', filePath)
 });

@@ -1,0 +1,55 @@
+# Maintainer: cristianocps <your-email@example.com>
+# AppImage-based PKGBUILD for users who prefer pre-built binaries
+pkgname=sbh-video-tools-appimage
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files (AppImage)"
+arch=('x86_64')
+url="https://github.com/cristianocps/simple-but-honest-video-tools"
+license=('MIT')
+depends=('fuse2' 'ffmpeg')
+optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
+provides=('sbh-video-tools')
+conflicts=('sbh-video-tools')
+options=('!strip')
+source=("SBH-Video-Tools-${pkgver}-linux-x64.AppImage::https://github.com/cristianocps/simple-but-honest-video-tools/releases/download/v${pkgver}/SBH-Video-Tools-${pkgver}-linux-x64.AppImage")
+sha256sums=('SKIP')
+
+package() {
+    # Install AppImage
+    install -Dm755 "SBH-Video-Tools-${pkgver}-linux-x64.AppImage" \
+        "${pkgdir}/opt/${pkgname}/sbh-video-tools.AppImage"
+    
+    # Create launcher script
+    install -dm755 "${pkgdir}/usr/bin"
+    cat > "${pkgdir}/usr/bin/sbh-video-tools" << EOF
+#!/bin/bash
+exec /opt/${pkgname}/sbh-video-tools.AppImage "\$@"
+EOF
+    chmod +x "${pkgdir}/usr/bin/sbh-video-tools"
+    
+    # Create desktop entry
+    install -dm755 "${pkgdir}/usr/share/applications"
+    cat > "${pkgdir}/usr/share/applications/sbh-video-tools.desktop" << EOF
+[Desktop Entry]
+Name=SBH Video Tools
+Comment=Simple But Honest Video Tools - Download, merge, extract and edit video/audio
+Exec=sbh-video-tools %U
+Icon=sbh-video-tools
+Type=Application
+Categories=AudioVideo;Audio;Video;AudioVideoEditing;
+Keywords=video;audio;merge;extract;download;youtube;ffmpeg;yt-dlp;
+MimeType=video/*;audio/*;
+Terminal=false
+StartupNotify=true
+EOF
+
+    # Extract icon from AppImage
+    cd "${srcdir}"
+    chmod +x "SBH-Video-Tools-${pkgver}-linux-x64.AppImage"
+    ./SBH-Video-Tools-${pkgver}-linux-x64.AppImage --appimage-extract usr/share/icons 2>/dev/null || true
+    
+    if [ -d "squashfs-root/usr/share/icons" ]; then
+        cp -r squashfs-root/usr/share/icons "${pkgdir}/usr/share/"
+    fi
+}

@@ -58,18 +58,18 @@ jobs:
           SOURCE_SHA256="${{ steps.checksums.outputs.source_sha256 }}"
           
           cat > PKGBUILD << 'PKGBUILD_EOF'
-          # Maintainer: cristianocps <your-email@example.com>
+          # Maintainer: cristianocps <cristianocps@gmail.com>
           pkgname=sbh-video-tools
           pkgver=${VERSION}
           pkgrel=1
           pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files"
           arch=('x86_64')
-          url="https://github.com/cristianocps/simple-but-honest-video-tools"
+          url="https://github.com/cristianocps/video-tools"
           license=('MIT')
           depends=('electron' 'ffmpeg' 'nodejs')
           makedepends=('npm' 'git')
           optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
-          source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${pkgver}.tar.gz")
+          source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/video-tools/archive/refs/tags/v${pkgver}.tar.gz")
           sha256sums=('${SOURCE_SHA256}')
           
           build() {
@@ -143,7 +143,7 @@ jobs:
           	pkgdesc = Simple But Honest Video Tools - Download, merge, extract and edit video/audio files
           	pkgver = ${VERSION}
           	pkgrel = 1
-          	url = https://github.com/cristianocps/simple-but-honest-video-tools
+          	url = https://github.com/cristianocps/video-tools
           	arch = x86_64
           	license = MIT
           	makedepends = npm
@@ -152,7 +152,7 @@ jobs:
           	depends = ffmpeg
           	depends = nodejs
           	optdepends = yt-dlp: for downloading videos from YouTube and other sites
-          	source = sbh-video-tools-${VERSION}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${VERSION}.tar.gz
+          	source = sbh-video-tools-${VERSION}.tar.gz::https://github.com/cristianocps/video-tools/archive/refs/tags/v${VERSION}.tar.gz
           	sha256sums = ${SOURCE_SHA256}
           
           pkgname = sbh-video-tools

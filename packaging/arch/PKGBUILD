@@ -4,16 +4,16 @@ pkgver=1.0.0
 pkgrel=1
 pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files"
 arch=('x86_64')
-url="https://github.com/cristianocps/simple-but-honest-video-tools"
+url="https://github.com/cristianocps/video-tools"
 license=('MIT')
 depends=('electron' 'ffmpeg' 'nodejs')
 makedepends=('npm' 'git')
 optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/simple-but-honest-video-tools/archive/refs/tags/v${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cristianocps/video-tools/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
 build() {
-    cd "simple-but-honest-video-tools-${pkgver}"
+    cd "video-tools-${pkgver}"
     
     # Install dependencies and build
     npm ci --ignore-scripts
@@ -21,7 +21,7 @@ build() {
 }
 
 package() {
-    cd "simple-but-honest-video-tools-${pkgver}"
+    cd "video-tools-${pkgver}"
     
     # Create directories
     install -dm755 "${pkgdir}/usr/lib/${pkgname}"
@@ -38,7 +38,7 @@ package() {
     # Install production dependencies only
     cd "${pkgdir}/usr/lib/${pkgname}"
     npm ci --omit=dev --ignore-scripts
-    cd "${srcdir}/simple-but-honest-video-tools-${pkgver}"
+    cd "${srcdir}/video-tools-${pkgver}"
     
     # Install icon
     if [ -f "build/icons/256x256.png" ]; then

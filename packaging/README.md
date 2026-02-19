@@ -36,7 +36,7 @@ Dependencies:
 
 ## Debian/Ubuntu
 
-Download the `.deb` package from the [releases page](https://github.com/cristianocps/simple-but-honest-video-tools/releases) and install:
+Download the `.deb` package from the [releases page](https://github.com/cristianocps/video-tools/releases) and install:
 
 ```bash
 sudo apt install ./SBH-Video-Tools-*-linux-x64.deb
@@ -52,7 +52,7 @@ chmod +x SBH-Video-Tools-*.AppImage
 
 ## Fedora/RHEL
 
-Download the `.rpm` package from the [releases page](https://github.com/cristianocps/simple-but-honest-video-tools/releases) and install:
+Download the `.rpm` package from the [releases page](https://github.com/cristianocps/video-tools/releases) and install:
 
 ```bash
 sudo dnf install ./SBH-Video-Tools-*-linux-x64.rpm
@@ -83,8 +83,8 @@ The AppImage works on any Linux distribution:
 
 ```bash
 # Clone the repository
-git clone https://github.com/cristianocps/simple-but-honest-video-tools.git
-cd simple-but-honest-video-tools
+git clone https://github.com/cristianocps/video-tools.git
+cd video-tools
 
 # Install dependencies
 npm install

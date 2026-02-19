@@ -73,13 +73,13 @@ jobs:
           sha256sums=('${SOURCE_SHA256}')
           
           build() {
-              cd "simple-but-honest-video-tools-${pkgver}"
+              cd "video-tools-${pkgver}"
               npm ci --ignore-scripts
               npm run build
           }
           
           package() {
-              cd "simple-but-honest-video-tools-${pkgver}"
+              cd "video-tools-${pkgver}"
               
               # Install app files
               install -dm755 "${pkgdir}/usr/lib/${pkgname}"
@@ -92,7 +92,7 @@ jobs:
               npm ci --omit=dev --ignore-scripts
               
               # Install desktop file
-              install -Dm644 "${srcdir}/simple-but-honest-video-tools-${pkgver}/build/icons/256x256.png" \
+              install -Dm644 "${srcdir}/video-tools-${pkgver}/build/icons/256x256.png" \
                   "${pkgdir}/usr/share/icons/hicolor/256x256/apps/${pkgname}.png"
               
               # Create desktop entry
@@ -117,7 +117,7 @@ jobs:
               chmod +x "${pkgdir}/usr/bin/${pkgname}"
               
               # Install license
-              install -Dm644 "${srcdir}/simple-but-honest-video-tools-${pkgver}/LICENSE" \
+              install -Dm644 "${srcdir}/video-tools-${pkgver}/LICENSE" \
                   "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
           }
           PKGBUILD_EOF

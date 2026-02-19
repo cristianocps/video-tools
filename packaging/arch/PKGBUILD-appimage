@@ -5,14 +5,14 @@ pkgver=1.0.0
 pkgrel=1
 pkgdesc="Simple But Honest Video Tools - Download, merge, extract and edit video/audio files (AppImage)"
 arch=('x86_64')
-url="https://github.com/cristianocps/simple-but-honest-video-tools"
+url="https://github.com/cristianocps/video-tools"
 license=('MIT')
 depends=('fuse2' 'ffmpeg')
 optdepends=('yt-dlp: for downloading videos from YouTube and other sites')
 provides=('sbh-video-tools')
 conflicts=('sbh-video-tools')
 options=('!strip')
-source=("SBH-Video-Tools-${pkgver}-linux-x64.AppImage::https://github.com/cristianocps/simple-but-honest-video-tools/releases/download/v${pkgver}/SBH-Video-Tools-${pkgver}-linux-x64.AppImage")
+source=("SBH-Video-Tools-${pkgver}-linux-x64.AppImage::https://github.com/cristianocps/video-tools/releases/download/v${pkgver}/SBH-Video-Tools-${pkgver}-linux-x64.AppImage")
 sha256sums=('SKIP')
 
 package() {
